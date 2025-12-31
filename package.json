@@ -1,0 +1,11 @@
+{
+  "name": "karaoke-night",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev": "npm --workspace apps/web run dev",
+    "build": "npm --workspace apps/web run build",
+    "preview": "npm --workspace apps/web run preview",
+    "lint": "npm --workspace apps/web run lint"
+  }
+}
