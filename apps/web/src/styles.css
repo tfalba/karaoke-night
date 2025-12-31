@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-black text-white;
+}
+
+/* subtle club glow background */
+.neon-bg {
+  background:
+    radial-gradient(900px 500px at 20% 10%, rgba(34,211,238,.14), transparent 60%),
+    radial-gradient(700px 400px at 85% 25%, rgba(236,72,153,.16), transparent 55%),
+    radial-gradient(900px 600px at 40% 90%, rgba(168,85,247,.12), transparent 60%),
+    linear-gradient(180deg, #06040a, #000);
+}
