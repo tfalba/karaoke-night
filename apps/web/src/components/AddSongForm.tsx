@@ -4,18 +4,19 @@ import { NeonButton } from "./NeonButton";
 
 export function AddSongForm(props: {
   players: Player[];
-  onAdd: (playerId: string, query: string) => Promise<void>;
+  onAdd: (playerIds: string[], query: string) => Promise<void>;
 }) {
   const { players, onAdd } = props;
-  const [playerId, setPlayerId] = useState(players[0]?.id ?? "");
+  const [playerIds, setPlayerIds] = useState<string[]>(
+    players[0]?.id ? [players[0].id] : []
+  );
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const canSubmit = useMemo(() => !!playerId && query.trim().length >= 2 && !busy, [
-    playerId,
-    query,
-    busy,
-  ]);
+  const canSubmit = useMemo(
+    () => playerIds.length > 0 && query.trim().length >= 2 && !busy,
+    [playerIds, query, busy]
+  );
 
   return (
     <form
@@ -25,7 +26,7 @@ export function AddSongForm(props: {
         if (!canSubmit) return;
         setBusy(true);
         try {
-          await onAdd(playerId, query.trim());
+          await onAdd(playerIds, query.trim());
           setQuery("");
         } finally {
           setBusy(false);
@@ -34,10 +35,13 @@ export function AddSongForm(props: {
     >
       <div className="grid grid-cols-2 gap-3">
         <label className="space-y-1">
-          <div className="text-xs text-white/60">Player</div>
+          <div className="text-xs text-white/60">Players</div>
           <select
-            value={playerId}
-            onChange={(e) => setPlayerId(e.target.value)}
+            multiple
+            value={playerIds}
+            onChange={(e) =>
+              setPlayerIds(Array.from(e.target.selectedOptions).map((o) => o.value))
+            }
             className="w-full rounded-2xl border border-white/10 bg-black/40 px-3 py-2"
           >
             {players.map(p => (

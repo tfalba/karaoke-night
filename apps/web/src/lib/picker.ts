@@ -9,7 +9,9 @@ export function pickNextPlayerId(opts: {
   const remainingByPlayer = new Map<string, number>();
   for (const e of entries) {
     if (e.status !== "queued") continue;
-    remainingByPlayer.set(e.playerId, (remainingByPlayer.get(e.playerId) ?? 0) + 1);
+    for (const playerId of e.playerIds) {
+      remainingByPlayer.set(playerId, (remainingByPlayer.get(playerId) ?? 0) + 1);
+    }
   }
 
   const eligible = Array.from(remainingByPlayer.entries())
@@ -40,7 +42,7 @@ export function pickNextPlayerId(opts: {
 export function pickNextEntryForPlayer(entries: SongEntry[], playerId: string): SongEntry | null {
   // FIFO: earliest queued song for that player
   const queued = entries
-    .filter(e => e.status === "queued" && e.playerId === playerId)
+    .filter(e => e.status === "queued" && e.playerIds.includes(playerId))
     .sort((a, b) => a.createdAt - b.createdAt);
   return queued[0] ?? null;
 }

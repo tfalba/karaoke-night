@@ -4,7 +4,7 @@ export type PersistedState = {
   entries: unknown[];
   nowPlayingId: string | null;
   lastSingerId: string | null;
-  draft?: { playerId?: string; query?: string };
+  draft?: { playerIds?: string[]; query?: string };
 };
 
 export function loadState<T>(fallback: T): T {

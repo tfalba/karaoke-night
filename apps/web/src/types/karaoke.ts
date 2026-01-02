@@ -10,7 +10,7 @@ export type YoutubePick = {
 
 export type SongEntry = {
   id: string;
-  playerId: PlayerId;
+  playerIds: PlayerId[];
   query: string;
   createdAt: number;
   youtube?: YoutubePick;

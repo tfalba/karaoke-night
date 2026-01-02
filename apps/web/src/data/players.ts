@@ -1,3 +1,9 @@
+import alexPhoto from "../assets/alex.png";
+import nicolePhoto from "../assets/nicole.png";
+import ginaPhoto from "../assets/gina.png";
+import karaPhoto from "../assets/kara.png";
+import tracyPhoto from "../assets/tracy.png";
+
 export type Player = {
   id: string;
   name: string;
@@ -9,19 +15,31 @@ export const PLAYERS: Player[] = [
   {
     id: "tracy",
     name: "Tracy",
-    nickname: "Neon Siren",
-    photoUrl: "https://placehold.co/300x300/png",
+    nickname: "Midnight Siren",
+    photoUrl: tracyPhoto,
   },
   {
-    id: "jen",
-    name: "Jen",
-    nickname: "Mic Magnet",
-    photoUrl: "https://placehold.co/300x300/png",
+    id: "gina",
+    name: "Gina",
+    nickname: "Neon Muse",
+    photoUrl: ginaPhoto,
   },
   {
-    id: "aamber",
-    name: "Aamber",
-    nickname: "Stage Spark",
-    photoUrl: "https://placehold.co/300x300/png",
+    id: "kara",
+    name: "Kara",
+    nickname: "Velvet Vibe",
+    photoUrl: karaPhoto,
+  },
+  {
+    id: "alex",
+    name: "Alex",
+    nickname: "Starlight Riot",
+    photoUrl: alexPhoto,
+  },
+  {
+    id: "nicole",
+    name: "Nicole",
+    nickname: "Crystal Howl",
+    photoUrl: nicolePhoto,
   },
 ];
