@@ -65,5 +65,6 @@ export async function searchKaraokeVideo(query: string): Promise<YoutubePick> {
   });
 
   scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  console.log(scored);
   return scored[0];
 }

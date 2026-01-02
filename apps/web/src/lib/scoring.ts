@@ -4,11 +4,26 @@ const PREFERRED_CHANNELS = [
   "Sing King",
   "Karaoke Version",
   "Karafun",
-  "Karaoke",
+  "Zoom Entertainment",
+  "Stingray Karaoke",
+  "Mega Karaoke Songs",
 ];
+
+const UNPREFFERED_CHANNELS = [
+  "Blue Karaoke & Instrumentals",
+]
 
 function norm(s: string) {
   return s.toLowerCase();
+}
+
+function tokens(s: string) {
+  return norm(s).split(/[^a-z0-9]+/).filter(Boolean);
+}
+
+function includesAllWords(channelTitle: string, target: string) {
+  const channelTokens = new Set(tokens(channelTitle));
+  return tokens(target).every((word) => channelTokens.has(word));
 }
 
 function keywordScore(title: string) {
@@ -31,9 +46,11 @@ function keywordScore(title: string) {
 }
 
 function channelScore(channelTitle: string) {
-  const c = norm(channelTitle);
-  const hit = PREFERRED_CHANNELS.find(x => norm(x) === c || c.includes(norm(x)));
-  return hit ? 12 : 0;
+  const hit = PREFERRED_CHANNELS.find((x) => includesAllWords(channelTitle, x));
+  const hitBad = UNPREFFERED_CHANNELS.find((x) => includesAllWords(channelTitle, x));
+  console.log(hit, hitBad);
+  console.log(hit ? 12 : hitBad ? -120 : 0);
+  return hit ? 30 : hitBad ? -120 : 0;
 }
 
 function queryMatchScore(title: string, query: string) {
@@ -49,7 +66,7 @@ function viewScore(viewCount: number) {
   // log-ish scaling: 0..~30 typical
   if (!viewCount || viewCount <= 0) return 0;
   const v = Math.log10(viewCount + 1); // 1M => ~6
-  return v * 5;
+  return v * 6;
 }
 
 export function scoreVideo(pick: YoutubePick, query: string) {
