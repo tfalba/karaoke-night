@@ -32,25 +32,27 @@ export function NowPlayingCard(props: {
         
     {/* <div className="rounded-3xl border border-white/10 bg-[#13dcf6]/80 p-4 shadow-neon"> */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-1 overflow-hidden justify-center items-center gap-2">
           {players.length > 0 ? (
             players.map((player) => (
               <img
                 key={player.id}
                 src={player.photoUrl}
                 alt={player.name}
-                className="h-16 w-16 rounded-2xl object-cover"
+                className="aspect-[1] rounded-2xl object-cover"
               />
             ))
           ) : (
             <img
               src="https://placehold.co/120x120/png"
               alt="No singer yet"
-              className="h-16 w-16 rounded-2xl object-cover"
+              className="aspect-[1]rounded-2xl object-cover"
             />
           )}
         </div>
-        <div className="min-w-0 bg-black/30 p-3">
+       
+      </div>
+       <div className="mt-4 rounded-2xl border border-white/10 min-w-0 bg-black/30 p-3">
           <div className="text-xs uppercase tracking-[0.25em] text-white/80">
             Now singing
           </div>
@@ -61,7 +63,6 @@ export function NowPlayingCard(props: {
             {players.length ? `“${displayNicknames}”` : "Add songs to begin"}
           </div>
         </div>
-      </div>
        
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-3">

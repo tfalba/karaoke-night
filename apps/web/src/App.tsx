@@ -79,7 +79,7 @@ const FALLBACK: PersistShape = {
   playersAlt: [],
 };
 
-const DEFAULT_PLAYER_COUNT = 5;
+const DEFAULT_PLAYER_COUNT = 1;
 
 type DraftPlayer = {
   id: string;
@@ -107,12 +107,14 @@ function buildDraftFromPlayers(players: Player[]) {
 }
 
 function buildPlayersAltFromDraft(draft: DraftPlayer[]) {
-  return draft.map((player, index) => ({
-    id: player.id,
-    name: player.name.trim(),
-    nickname: "Guest Star",
-    photoUrl: player.photoUrl || getAvatarForIndex(index),
-  }));
+  return draft
+    .filter((player) => player.name.trim())
+    .map((player, index) => ({
+      id: player.id,
+      name: player.name.trim(),
+      nickname: "Guest Star",
+      photoUrl: player.photoUrl || getAvatarForIndex(index),
+    }));
 }
 
 export default function App() {
@@ -131,6 +133,7 @@ export default function App() {
   const [playersPickerOpen, setPlayersPickerOpen] = useState(
     () => !(persistedState.playersAlt?.length ?? 0)
   );
+  const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
   const [playersDraft, setPlayersDraft] = useState<DraftPlayer[]>(
     () => buildDraftFromPlayers(persistedState.playersAlt ?? [])
   );
@@ -310,12 +313,22 @@ export default function App() {
 
   function openPlayersModal() {
     setPlayersDraft(buildDraftFromPlayers(playersAlt));
+    setActiveDraftId(null);
     setPlayersPickerOpen(true);
   }
 
 
   const remainingCount = entries.filter((e) => e.status === "queued").length;
   const showNowPlaying = Boolean(nowPlaying || nowPlayers.length > 0);
+  const completedDrafts = playersDraft.filter((draft) => draft.name.trim());
+  const activeDraft =
+    playersDraft.find((draft) => draft.id === activeDraftId) ??
+    playersDraft[playersDraft.length - 1];
+  const activeDraftIndex = activeDraft
+    ? playersDraft.findIndex((draft) => draft.id === activeDraft.id)
+    : -1;
+  const canAddSinger = Boolean(activeDraft?.name.trim());
+  const canSaveSingers = completedDrafts.length > 0;
 
   return (
     <div
@@ -381,25 +394,37 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => {
+                    if (!canAddSinger) return;
+                    const nextId = uid("player");
                     setPlayersDraft((prev) => [
                       ...prev,
                       {
-                        id: uid("player"),
+                        id: nextId,
                         name: "",
                         photoUrl: getAvatarForIndex(prev.length),
                       },
                     ]);
+                    setActiveDraftId(nextId);
                   }}
-                  className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/50"
+                  disabled={!canAddSinger}
+                  className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Add singer
                 </button>
                 <button
                   type="button"
                   onClick={() => {
-                    setPlayersDraft((prev) =>
-                      prev.length > 1 ? prev.slice(0, -1) : prev
-                    );
+                    setPlayersDraft((prev) => {
+                      if (prev.length <= 1) return prev;
+                      const next = prev.slice(0, -1);
+                      if (
+                        activeDraftId &&
+                        !next.some((draft) => draft.id === activeDraftId)
+                      ) {
+                        setActiveDraftId(next[next.length - 1]?.id ?? null);
+                      }
+                      return next;
+                    });
                   }}
                   disabled={playersDraft.length <= 1}
                   className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/50 disabled:cursor-not-allowed disabled:opacity-60"
@@ -413,31 +438,75 @@ export default function App() {
                     setPlayersAlt(readyPlayers);
                     setPlayersPickerOpen(false);
                   }}
-                  disabled={playersDraft.some((draft) => !draft.name.trim())}
+                  disabled={!canSaveSingers}
                   className="rounded-full bg-[#13dcf6] px-5 py-2 text-sm font-semibold text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {playersAlt.length ? "Save singers" : "Start the night"}
                 </button>
               </div>
             </div>
-            <div className="grid gap-4 lg:grid-cols-3">
-              {playersDraft.map((player, index) => (
-                <div
-                  key={player.id}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-4"
-                >
+            <div className="grid gap-4 lg:grid-cols-[2fr_3fr]">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="mb-3 text-sm font-semibold text-white/80">
+                  Entered singers
+                </div>
+                {completedDrafts.length ? (
+                  <div className="flex flex-wrap gap-3">
+                    {completedDrafts.map((player, index) => {
+                      const isActive = activeDraft?.id === player.id;
+                      return (
+                        <div
+                          key={player.id}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setActiveDraftId(player.id)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              setActiveDraftId(player.id);
+                            }
+                          }}
+                          style={{ animationDelay: `${index * 90}ms` }}
+                          className={[
+                            "animate-singer-pop flex items-center gap-3 rounded-full border bg-black/30 px-3 py-2 transition",
+                            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#13dcf6]/70",
+                            isActive
+                              ? "border-[#13dcf6] ring-2 ring-[#13dcf6]/50"
+                              : "border-white/10 hover:border-white/40",
+                          ].join(" ")}
+                        >
+                          <img
+                            src={player.photoUrl}
+                            alt={`${player.name} avatar`}
+                            className="h-9 w-9 rounded-full object-cover"
+                          />
+                          <div className="text-sm font-semibold">
+                            {player.name}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-sm text-white/50">
+                    No singers yet. Add the first name and avatar to get the
+                    party rolling.
+                  </div>
+                )}
+              </div>
+              {activeDraft ? (
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div className="mb-3 text-sm font-semibold text-white/80">
-                    Singer {index + 1}
+                    Singer {activeDraftIndex + 1}
                   </div>
                   <input
                     type="text"
-                    value={player.name}
+                    value={activeDraft.name}
                     placeholder="Singer name"
                     onChange={(event) => {
                       const value = event.target.value;
                       setPlayersDraft((prev) =>
                         prev.map((draft) =>
-                          draft.id === player.id
+                          draft.id === activeDraft.id
                             ? { ...draft, name: value }
                             : draft
                         )
@@ -447,7 +516,7 @@ export default function App() {
                   />
                   <div className="grid grid-cols-5 gap-2">
                     {AVATAR_OPTIONS.map((avatar) => {
-                      const isSelected = player.photoUrl === avatar;
+                      const isSelected = activeDraft.photoUrl === avatar;
                       return (
                         <button
                           key={avatar}
@@ -455,7 +524,7 @@ export default function App() {
                           onClick={() => {
                             setPlayersDraft((prev) =>
                               prev.map((draft) =>
-                                draft.id === player.id
+                                draft.id === activeDraft.id
                                   ? { ...draft, photoUrl: avatar }
                                   : draft
                               )
@@ -471,14 +540,14 @@ export default function App() {
                           <img
                             src={avatar}
                             alt="Singer avatar option"
-                            className="h-12 w-12 object-cover"
+                            className="w-full aspect-[1]object-cover"
                           />
                         </button>
                       );
                     })}
                   </div>
                 </div>
-              ))}
+              ) : null}
             </div>
           </div>
         </div>
