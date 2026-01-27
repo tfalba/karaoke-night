@@ -1,8 +1,8 @@
-import alexPhoto from "../assets/alex.png";
-import nicolePhoto from "../assets/nicole.png";
-import ginaPhoto from "../assets/gina.png";
-import karaPhoto from "../assets/kara.png";
-import tracyPhoto from "../assets/tracy.png";
+import alexPhoto from "../assets/friends/alex.png";
+import nicolePhoto from "../assets/friends/nicole.png";
+import ginaPhoto from "../assets/friends/gina.png";
+import karaPhoto from "../assets/friends/kara.png";
+import tracyPhoto from "../assets/friends/tracy.png";
 
 export type Player = {
   id: string;

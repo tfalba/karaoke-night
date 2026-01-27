@@ -27,13 +27,13 @@ export function QueueDrawer(props: {
   } = props;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6">
     
       <div
         className={[
           "mt-3 w-[520px] max-w-[90vw] overflow-hidden rounded-3xl border border-white/10 bg-[#9c27b0]/60 backdrop-blur",
           "shadow-neon transition-all duration-200",
-          isOpen ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
+          isOpen ? "translate-y-0 opacity-100]" : "pointer-events-none translate-y-3 opacity-0",
         ].join(" ")}
       >
         <div className="border-b border-white/10 p-4">

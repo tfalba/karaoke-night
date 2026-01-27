@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# Karaoke Night
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A neon-soaked karaoke queue manager that finds the best karaoke videos on YouTube,
+keeps the rotation fair, and persists the party between sessions.
 
-Currently, two official plugins are available:
+## Project Snapshot
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ID: karaoke-night
+- Role: design, front-end, back-end
+- Tech Stack: React, TypeScript, Vite, Tailwind CSS, YouTube Data API, react-youtube
+- Summary: A club-mode karaoke queue that auto-finds YouTube karaoke versions,
+  rotates singers fairly, and tracks the session in local storage.
 
-## React Compiler
+## Description
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Overview
 
-## Expanding the ESLint configuration
+Karaoke Night turns a shared queue into a smooth, fair rotation by combining
+YouTube search, karaoke-focused scoring, and a lightweight local state machine.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Steps
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Pick one or more singers and enter a song request.
+2. Search YouTube for a "karaoke version" and score candidates by keywords,
+   channel reputation, and view counts.
+3. Add the best match to the queue with singer metadata and avatars.
+4. Advance to the next singer using weighted rotation that avoids repeats
+   when possible.
+5. Persist the queue and now-playing state until the party is reset.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Details
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Summary
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Singers add songs to the queue, the app selects the best karaoke video from
+YouTube, and a weighted picker balances turns based on remaining songs. The
+interface keeps the main video stage clear, while drawers manage queue and rules.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Key Features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Weighted singer rotation that avoids the last singer when possible.
+- YouTube scoring tuned for karaoke channels and strong "karaoke version" intent.
+- Queue drawer with "make next" overrides and per-entry removal.
+- Local storage persistence with a one-click reset.
+
+### How Built
+
+- React + TypeScript UI bootstrapped with Vite for fast local iteration.
+- Tailwind CSS neon theme with custom cards and drawer panels.
+- YouTube Data API search + stats, embedded via react-youtube.
+- Local storage persistence for entries, now-playing, and last singer state.
+
+## Links
+
+- Live URL: not deployed
+- GitHub URL: this repository

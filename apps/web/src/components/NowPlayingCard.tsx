@@ -1,16 +1,36 @@
 import type { Player } from "../data/players";
 import type { SongEntry } from "../types/karaoke";
+import { NeonButton } from "./NeonButton";
 
 export function NowPlayingCard(props: {
   players: Player[];
   entry: SongEntry | null;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
-  const { players, entry } = props;
+  const { players, entry, isOpen, onToggle } = props;
   const displayNames = players.map((player) => player.name).join(" + ");
   const displayNicknames = players.map((player) => player.nickname).join(" + ");
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-[#13dcf6]/80 p-4 shadow-neon">
+     <div className="flex flex-col h-full">
+          <div className="flex justify-end">
+            <NeonButton className="bg-[#13dcf6]/60" onClick={onToggle}>
+              {isOpen ? "Close Now Singing" : "Open Now Singing"}
+            </NeonButton>
+          </div>
+          <div
+            className={[
+              "overflow-hidden rounded-3xl border border-white/10 bg-[#13dcf6]/80 p-4",
+              "shadow-neon transition-all duration-200",
+              isOpen
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none translate-y-3 opacity-0",
+            ].join(" ")}
+          >
+
+        
+    {/* <div className="rounded-3xl border border-white/10 bg-[#13dcf6]/80 p-4 shadow-neon"> */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           {players.length > 0 ? (
@@ -53,6 +73,7 @@ export function NowPlayingCard(props: {
           {entry?.youtube?.channelTitle ? `Source: ${entry.youtube.channelTitle}` : ""}
         </div>
       </div>
+    </div>
     </div>
   );
 }
