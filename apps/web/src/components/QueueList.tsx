@@ -44,6 +44,7 @@ export function QueueList(props: {
             .filter(Boolean)
             .join(" + ");
           const accent = playerAccent(playersForEntry[0]?.name);
+          const displayTitle = decodeHtmlEntities(e.youtube?.title ?? e.query);
           return (
             <div
               key={e.id}
@@ -59,14 +60,14 @@ export function QueueList(props: {
                             key={player.id}
                             src={player.photoUrl}
                             alt={player.name}
-                            className="h-8 w-8 rounded-full object-cover"
+                            className="h-12 w-12 rounded-full object-cover max-w-fit"
                           />
                         ))
                       ) : (
                         <img
                           src={groupAvatar}
                           alt="Singer"
-                          className="h-8 w-8 rounded-full object-cover max-w-fit"
+                          className="h-12 w-12 rounded-full object-cover max-w-fit"
                         />
                       )}
                     </div>
@@ -78,7 +79,7 @@ export function QueueList(props: {
                         ) : null}
                       </div>
                       <div className="truncate text-sm text-white/70">
-                        {e.youtube?.title ?? e.query}
+                        {displayTitle}
                       </div>
                     </div>
                   </div>
@@ -128,4 +129,11 @@ function playerAccent(name?: string) {
     default:
       return "bg-white/5";
   }
+}
+
+function decodeHtmlEntities(value: string) {
+  if (typeof document === "undefined") return value;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(value, "text/html");
+  return doc.documentElement.textContent ?? value;
 }

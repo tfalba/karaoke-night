@@ -11,6 +11,9 @@ export function NowPlayingCard(props: {
   const { players, entry, isOpen, onToggle } = props;
   const displayNames = players.map((player) => player.name).join(" + ");
   const displayNicknames = players.map((player) => player.nickname).join(" + ");
+  const displayTitle = decodeHtmlEntities(
+    entry?.youtube?.title ?? entry?.query ?? "—"
+  );
 
   return (
      <div className="flex flex-col h-full">
@@ -68,7 +71,7 @@ export function NowPlayingCard(props: {
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-3">
         <div className="text-xs text-white/80">Song</div>
         <div className="truncate font-semibold">
-          {entry?.youtube?.title ?? entry?.query ?? "—"}
+          {displayTitle}
         </div>
         <div className="truncate text-xs text-white/80">
           {entry?.youtube?.channelTitle ? `Source: ${entry.youtube.channelTitle}` : ""}
@@ -77,4 +80,11 @@ export function NowPlayingCard(props: {
     </div>
     </div>
   );
+}
+
+function decodeHtmlEntities(value: string) {
+  if (typeof document === "undefined") return value;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(value, "text/html");
+  return doc.documentElement.textContent ?? value;
 }
