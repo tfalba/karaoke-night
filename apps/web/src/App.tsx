@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { SongEntry } from "./types/karaoke";
 import { clearState, loadState, saveState } from "./lib/storage";
 import { searchKaraokeVideo } from "./lib/youtube";
@@ -16,7 +16,7 @@ import concert from "./assets/backgrounds/concert.jpg";
 import discoBallLaser from "./assets/backgrounds/disco-ball-laser.jpg";
 import discoBallThree from "./assets/backgrounds/disco-ball-three.jpg";
 import discoBall from "./assets/backgrounds/disco-ball.jpg";
-import fireworks from "./assets/backgrounds/fireworks.jpg";
+import northernLights from "./assets/backgrounds/northern-lights.jpg";
 import turntable from "./assets/backgrounds/turntable.jpg";
 import avatar1 from "./assets/avatars/avatar-1.png";
 import avatar2 from "./assets/avatars/avatar-2.png";
@@ -41,7 +41,7 @@ const BACKGROUND_OPTIONS = [
   { label: "Disco Ball Laser", image: discoBallLaser },
   { label: "Disco Ball Trio", image: discoBallThree },
   { label: "Disco Ball", image: discoBall },
-  { label: "Fireworks", image: fireworks },
+  { label: "Northern Lights", image: northernLights },
   { label: "Turntable", image: turntable },
 ];
 
@@ -84,6 +84,7 @@ const DEFAULT_PLAYER_COUNT = 1;
 type DraftPlayer = {
   id: string;
   name: string;
+  nickname: string;
   photoUrl: string;
 };
 
@@ -96,12 +97,14 @@ function buildDraftFromPlayers(players: Player[]) {
     return players.map((player, index) => ({
       id: player.id,
       name: player.name,
+      nickname: player.nickname ?? "",
       photoUrl: player.photoUrl || getAvatarForIndex(index),
     }));
   }
   return Array.from({ length: DEFAULT_PLAYER_COUNT }, (_, index) => ({
     id: `player-${index + 1}`,
     name: "",
+    nickname: "",
     photoUrl: getAvatarForIndex(index),
   }));
 }
@@ -112,7 +115,7 @@ function buildPlayersAltFromDraft(draft: DraftPlayer[]) {
     .map((player, index) => ({
       id: player.id,
       name: player.name.trim(),
-      nickname: "Guest Star",
+      nickname: player.nickname.trim() || "Guest Star",
       photoUrl: player.photoUrl || getAvatarForIndex(index),
     }));
 }
@@ -134,9 +137,11 @@ export default function App() {
     () => !(persistedState.playersAlt?.length ?? 0)
   );
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
+  const [shouldScrollToEditor, setShouldScrollToEditor] = useState(false);
   const [playersDraft, setPlayersDraft] = useState<DraftPlayer[]>(
     () => buildDraftFromPlayers(persistedState.playersAlt ?? [])
   );
+  const editorRef = useRef<HTMLDivElement | null>(null);
 
   const [entries, setEntries] = useState<SongEntry[]>(() => {
     const persisted = persistedState.entries;
@@ -159,6 +164,14 @@ export default function App() {
       playersAlt,
     });
   }, [entries, nowPlayingId, lastSingerId, playersAlt]);
+
+  useEffect(() => {
+    if (!shouldScrollToEditor) return;
+    if (editorRef.current) {
+      editorRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+    setShouldScrollToEditor(false);
+  }, [shouldScrollToEditor]);
 
   const PLAYERS_ALT = playersAlt.length ? playersAlt : PLAYERS;
   const playerById = useMemo(
@@ -401,6 +414,7 @@ export default function App() {
                       {
                         id: nextId,
                         name: "",
+                        nickname: "",
                         photoUrl: getAvatarForIndex(prev.length),
                       },
                     ]);
@@ -459,12 +473,17 @@ export default function App() {
                           key={player.id}
                           role="button"
                           tabIndex={0}
-                          onClick={() => setActiveDraftId(player.id)}
+                          onClick={() => {
+                            setActiveDraftId(player.id);
+                            setShouldScrollToEditor(true);
+                          }}
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
                               setActiveDraftId(player.id);
+                              setShouldScrollToEditor(true);
                             }
                           }}
+                          title={isActive ? "Editing singer details" : "Edit singer"}
                           style={{ animationDelay: `${index * 90}ms` }}
                           className={[
                             "animate-singer-pop flex items-center gap-3 rounded-full border bg-black/30 px-3 py-2 transition",
@@ -479,12 +498,17 @@ export default function App() {
                             alt={`${player.name} avatar`}
                             className="h-9 w-9 rounded-full object-cover"
                           />
-                          <div className="text-sm font-semibold">
-                            {player.name}
-                          </div>
+                        <div className="text-sm font-semibold">
+                          {player.name}
                         </div>
-                      );
-                    })}
+                        {isActive ? (
+                          <span className="rounded-full bg-[#13dcf6]/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#13dcf6]">
+                            Editing
+                          </span>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                   </div>
                 ) : (
                   <div className="text-sm text-white/50">
@@ -494,26 +518,47 @@ export default function App() {
                 )}
               </div>
               {activeDraft ? (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div
+                  ref={editorRef}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                >
                   <div className="mb-3 text-sm font-semibold text-white/80">
                     Singer {activeDraftIndex + 1}
                   </div>
-                  <input
-                    type="text"
-                    value={activeDraft.name}
-                    placeholder="Singer name"
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setPlayersDraft((prev) =>
-                        prev.map((draft) =>
-                          draft.id === activeDraft.id
-                            ? { ...draft, name: value }
-                            : draft
-                        )
-                      );
-                    }}
-                    className="mb-4 w-full rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
-                  />
+                  <div className="mb-4 grid gap-3 md:grid-cols-2">
+                    <input
+                      type="text"
+                      value={activeDraft.name}
+                      placeholder="Singer name"
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setPlayersDraft((prev) =>
+                          prev.map((draft) =>
+                            draft.id === activeDraft.id
+                              ? { ...draft, name: value }
+                              : draft
+                          )
+                        );
+                      }}
+                      className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={activeDraft.nickname}
+                      placeholder="Nickname"
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setPlayersDraft((prev) =>
+                          prev.map((draft) =>
+                            draft.id === activeDraft.id
+                              ? { ...draft, nickname: value }
+                              : draft
+                          )
+                        );
+                      }}
+                      className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
+                    />
+                  </div>
                   <div className="grid grid-cols-5 gap-2">
                     {AVATAR_OPTIONS.map((avatar) => {
                       const isSelected = activeDraft.photoUrl === avatar;

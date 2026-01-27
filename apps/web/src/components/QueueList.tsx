@@ -1,5 +1,6 @@
 import type { Player } from "../data/players";
 import type { SongEntry } from "../types/karaoke";
+import groupAvatar from "../assets/avatars/avatar-group.png";
 
 export function QueueList(props: {
   players: Player[];
@@ -52,7 +53,7 @@ export function QueueList(props: {
                 <div className="min-w-0">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1">
-                      {playersForEntry.length > 0 ? (
+                      {playersForEntry.length === 1 ? (
                         playersForEntry.map((player) => (
                           <img
                             key={player.id}
@@ -63,9 +64,9 @@ export function QueueList(props: {
                         ))
                       ) : (
                         <img
-                          src="https://placehold.co/64x64/png"
+                          src={groupAvatar}
                           alt="Singer"
-                          className="h-8 w-8 rounded-full object-cover"
+                          className="h-8 w-8 rounded-full object-cover max-w-fit"
                         />
                       )}
                     </div>
