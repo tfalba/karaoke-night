@@ -25,7 +25,7 @@ export function QueueList(props: {
     });
 
   return (
-    <div className="space-y-2">
+    <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
       {queued.length === 0 ? (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
           No songs queued yet.
@@ -43,7 +43,7 @@ export function QueueList(props: {
             .map((player) => player.nickname)
             .filter(Boolean)
             .join(" + ");
-          const accent = playerAccent(playersForEntry[0]?.name);
+          const accent = playerAccent(players, playersForEntry[0]?.id);
           const displayTitle = decodeHtmlEntities(e.youtube?.title ?? e.query);
           return (
             <div
@@ -114,17 +114,18 @@ export function QueueList(props: {
   );
 }
 
-function playerAccent(name?: string) {
-  switch ((name ?? "").toLowerCase()) {
-    case "tracy":
+function playerAccent(players: Player[], playerId?: string) {
+  const index = players.findIndex((player) => player.id === playerId);
+  switch (index) {
+    case 0:
       return "bg-[#152536]/70";
-    case "gina":
+    case 1:
       return "bg-[#2a1a3c]/70";
-    case "kara":
+    case 2:
       return "bg-[#21381a]/70";
-    case "alex":
+    case 3:
       return "bg-[#3a1f1b]/70";
-    case "nicole":
+    case 4:
       return "bg-[#1f2f3a]/70";
     default:
       return "bg-white/5";

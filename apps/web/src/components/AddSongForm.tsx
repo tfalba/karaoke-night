@@ -62,6 +62,7 @@ export function AddSongForm(props: {
         try {
           await onAdd(playerIds, query.trim());
           setQuery("");
+          setPlayerIds([]);
         } finally {
           setBusy(false);
         }
@@ -69,12 +70,14 @@ export function AddSongForm(props: {
     >
       <div className="grid grid-cols-2 gap-3">
         <label className="space-y-1">
-          <div className="text-xs text-white/60">Players</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+            Select singers
+          </div>
           <div ref={menuRef} className="relative">
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
-              className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-black/40 px-3 py-2 text-left text-sm"
+              className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 via-transparent to-white/5 px-3 py-2 text-left text-sm shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur"
             >
               <span className="text-white/80">
                 {selectedPlayers.length
@@ -86,8 +89,8 @@ export function AddSongForm(props: {
               </span>
             </button>
             {menuOpen ? (
-              <div className="absolute z-10 w-full rounded-2xl border border-white/10 bg-[#0b0b15]/95 p-2 shadow-xl">
-                <div className="max-h-64 space-y-1 overflow-y-auto">
+              <div className="absolute bottom-0 z-10 w-full rounded-2xl border border-white/10 bg-gradient-to-br from-[#151529]/95 via-[#0b0b15]/98 to-black/95 p-2 shadow-[0_18px_50px_rgba(0,0,0,0.55)] ring-1 ring-white/10">
+                <div className="max-h-[220px] space-y-1 overflow-y-auto">
                   {players.map((player) => {
                     const isChecked = playerIds.includes(player.id);
                     return (

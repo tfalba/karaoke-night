@@ -31,7 +31,7 @@ export function QueueDrawer(props: {
     
       <div
         className={[
-          "mt-3 w-[520px] max-w-[90vw] overflow-hidden rounded-3xl border border-white/10 bg-[#9c27b0]/60 backdrop-blur",
+          "mt-3 w-[520px] max-w-[90vw] overflow-hidden rounded-3xl border border-white/10 bg-black/60 backdrop-blur",
           "shadow-neon transition-all duration-200",
           isOpen ? "translate-y-0 opacity-100]" : "pointer-events-none translate-y-3 opacity-0",
         ].join(" ")}
@@ -48,8 +48,7 @@ export function QueueDrawer(props: {
         </div>
 
         <div className="p-4">
-          <AddSongForm players={players} onAdd={onAdd} />
-          <div className="mt-4">
+          <div className="mb-4">
             <QueueList
               players={players}
               entries={entries}
@@ -58,11 +57,13 @@ export function QueueDrawer(props: {
               onMakeNext={onMakeNext}
             />
           </div>
+                    <AddSongForm players={players} onAdd={onAdd} />
+
         </div>
       </div>
         <div className="flex justify-end">
-        <NeonButton className="bg-[#9c27b0]/60" onClick={onToggle}>
-          {isOpen ? "Close Queue" : "Open Queue"}
+        <NeonButton className="bg-black/60 lowercase" onClick={onToggle}>
+          {isOpen ? "- Queue" : "+ Queue"}
         </NeonButton>
       </div>
 

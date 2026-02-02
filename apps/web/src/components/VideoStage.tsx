@@ -27,8 +27,8 @@ export function VideoStage(props: {
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-start">
-        <NeonButton className="bg-[#9c27b0]/60" onClick={onToggle}>
-          {isOpen ? "Close Lyrics" : "Open Lyrics"}
+        <NeonButton className="bg-[#9c27b0]/60 lowercase" onClick={onToggle}>
+          {isOpen ? "- Lyrics" : "+ Lyrics"}
         </NeonButton>
       </div>
       <div

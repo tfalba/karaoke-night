@@ -141,6 +141,12 @@ export default function App() {
   const [playersDraft, setPlayersDraft] = useState<DraftPlayer[]>(
     () => buildDraftFromPlayers(persistedState.playersAlt ?? [])
   );
+  const backgroundLabel = useMemo(() => {
+    return (
+      BACKGROUND_OPTIONS.find((option) => option.image === backgroundImage)
+        ?.label ?? "Club Mode"
+    );
+  }, [backgroundImage]);
   const editorRef = useRef<HTMLDivElement | null>(null);
 
   const [entries, setEntries] = useState<SongEntry[]>(() => {
@@ -598,16 +604,16 @@ export default function App() {
         </div>
       ) : null}
       <div className="px-8 pt-8 flex items-center justify-between">
-          <div className="text-xs uppercase tracking-[0.35em] text-white/60">
+          <div className="text-lg uppercase tracking-[0.35em] text-white/80">
             Karaoke Night
           </div>
-          <div className="text-2xl font-semibold">Club Mode</div>
+          <div className="text-2xl uppercase tracking-[0.35em]">{backgroundLabel}</div>
 
       
       </div>
-      <div className="mx-auto grid grid-cols-[3fr_1fr] gap-6 p-6">
+      <div className="mx-auto grid grid-cols-[3.2fr_1fr] gap-6 p-6">
         {/* Main video */}
-        <div className=" aspect-[16/9] col-main">
+        <div className=" aspect-[16/9] col-main opacity-80">
           <VideoStage
             isOpen={lyricsOpen}
             onToggle={() => setLyricsOpen((v) => !v)}
@@ -632,10 +638,11 @@ export default function App() {
         </div>
       ) : null}
       </div>
-        <div className="flex items-center justify-center gap-3">
-          <div className="text-sm text-white/70">{remainingCount} queued</div>
-          <NeonButton onClick={openPlayersModal}>Edit singers</NeonButton>
+        <div className="flex items-center justify-center gap-3 absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-6 bg-[gold]/60 p-2 rounded-2xl">
+          <div className="text-sm text-white/70 bg-[black]/60">{remainingCount} queued</div>
+          <NeonButton className="bg-[black]/60" onClick={openPlayersModal}>Edit singers</NeonButton>
           <NeonButton
+            className="bg-[black]/60"
             onClick={nextUp}
             disabled={remainingCount === 0 && !nowPlayingId}
           >

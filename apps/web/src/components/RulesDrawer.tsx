@@ -48,8 +48,8 @@ export function RulesDrawer(props: {
         </div>
       </div>
        <div className="flex justify-start">
-        <NeonButton className="bg-[#CDDC39]/60" onClick={onToggle}>
-          {isOpen ? "Close Rules" : "Open Rules"}
+        <NeonButton className="bg-[#CDDC39]/60 lowercase" onClick={onToggle}>
+          {isOpen ? "- Rules" : "+ Rules"}
         </NeonButton>
       </div>
 
